@@ -1,7 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { useAuth } from "./contexts/AuthContext";
 import { ROLES } from "./utils/roles";
-import Layout from "./components/Shared/Layout";  // Import Layout
 import HomePage from "./pages/Public/HomePage";
 import ProjectsPage from "./pages/Public/ProjectsPage";
 import ReportPage from "./pages/Public/ReportPage";
@@ -32,41 +31,39 @@ const PrivateRoute: React.FC<PrivateRouteProps> = ({ children, requiredRole }) =
 const AppRoutes: React.FC = () => {
   return (
     <BrowserRouter>
-      <div className="min-h-screen flex flex-col">  {/* Ensure full height */}
-        <Routes>
-          {/* Public Routes (Now Wrapped in Layout) */}
-          <Route path="/" element={<Layout><HomePage /></Layout>} />
-          <Route path="/projects" element={<Layout><ProjectsPage /></Layout>} />
-          <Route path="/report" element={<Layout><ReportPage /></Layout>} />
-          <Route path="/revenue" element={<Layout><RevenuePage /></Layout>} />
+      <Routes>
+        {/* Public Routes */}
+        <Route path="/" element={<HomePage />} />
+        <Route path="/projects" element={<ProjectsPage />} />
+        <Route path="/report" element={<ReportPage />} />
+        <Route path="/revenue" element={<RevenuePage />} />
 
-          {/* Admin Login */}
-          <Route path="/login" element={<Login />} />
+        {/* Admin Login */}
+        <Route path="/login" element={<Login />} />
 
-          {/* Admin Routes */}
-          <Route
-            path="/admin/dashboard"
-            element={
-              <PrivateRoute requiredRole={ROLES.ADMIN}>
-                <DashboardPage />
-              </PrivateRoute>
-            }
-          />
+        {/* Admin Routes */}
+        <Route
+          path="/admin/dashboard"
+          element={
+            <PrivateRoute requiredRole={ROLES.ADMIN}>
+              <DashboardPage />
+            </PrivateRoute>
+          }
+        />
 
-          {/* Super Admin Routes */}
-          <Route
-            path="/super-admin/dashboard"
-            element={
-              <PrivateRoute requiredRole={ROLES.SUPER_ADMIN}>
-                <SuperDashboardPage />
-              </PrivateRoute>
-            }
-          />
+        {/* Super Admin Routes */}
+        <Route
+          path="/super-admin/dashboard"
+          element={
+            <PrivateRoute requiredRole={ROLES.SUPER_ADMIN}>
+              <SuperDashboardPage />
+            </PrivateRoute>
+          }
+        />
 
-          {/* Fallback Route */}
-          <Route path="*" element={<Navigate to="/" />} />
-        </Routes>
-      </div>
+        {/* Fallback Route */}
+        <Route path="*" element={<Navigate to="/" />} />
+      </Routes>
     </BrowserRouter>
   );
 };

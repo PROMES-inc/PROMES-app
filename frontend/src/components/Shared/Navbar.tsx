@@ -1,68 +1,113 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { FiMenu, FiX } from "react-icons/fi"; // For hamburger and close icons
+import { FiSearch, FiMenu, FiX } from "react-icons/fi";
+import { motion, AnimatePresence } from "framer-motion";
 
 const Navbar: React.FC = () => {
+  const [isScrolled, setIsScrolled] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
 
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 50);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  useEffect(() => {
+    document.body.style.overflow = isOpen ? "hidden" : "auto";
+  }, [isOpen]);
+
   return (
-    <nav className="bg-blue-600 p-4 text-white">
-      <div className="container mx-auto flex justify-between items-center">
-        {/* Logo */}
-        <Link to="/" className="text-2xl font-bold">
-          Constituency Monitor
+    <nav
+      className={`fixed top-0 left-0 w-full p-4 flex justify-between items-center z-50 transition-all duration-300 ${
+        isScrolled ? "bg-white shadow-md" : "bg-white/80 backdrop-blur-md"
+      }`}
+    >
+      {/* Logo */}
+      <div className="flex items-center space-x-2">
+        <img src="/logo.png" alt="PROMES Logo" className="h-10" />
+        <span className="text-black text-lg font-semibold">PROMES</span>
+      </div>
+
+      {/* Desktop Navigation */}
+      <div className="hidden md:flex space-x-8 text-black text-lg">
+        <Link to="/" className="font-bold hover:text-purple-500 transition">
+          Home
         </Link>
+        <Link to="/projects" className="hover:text-purple-500 transition">
+          Projects
+        </Link>
+        <Link to="/complaint" className="hover:text-purple-500 transition">
+          Complaint
+        </Link>
+      </div>
 
-        {/* Desktop Menu */}
-        <div className="hidden md:flex space-x-6">
-          <Link to="/projects" className="hover:text-blue-200 transition">
-            Projects
-          </Link>
-          <Link to="/report" className="hover:text-blue-200 transition">
-            Report
-          </Link>
-          <Link to="/revenue" className="hover:text-blue-200 transition">
-            Revenue
-          </Link>
-        </div>
-
-        {/* Mobile Menu Button */}
-        <button
-          className="md:hidden focus:outline-none"
-          onClick={() => setIsOpen(!isOpen)}
-        >
-          {isOpen ? <FiX size={28} /> : <FiMenu size={28} />}
+      {/* Search & Download Button */}
+      <div className="hidden md:flex items-center space-x-6">
+        <FiSearch className="text-black text-xl cursor-pointer hover:text-purple-500 transition" />
+        <button className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-5 py-2 rounded-lg shadow-md hover:scale-105 transition-transform">
+          Download
         </button>
       </div>
 
-      {/* Mobile Dropdown */}
-      {isOpen && (
-        <div className="md:hidden absolute top-16 left-0 w-full bg-white shadow-md text-black">
-          <div className="flex flex-col space-y-4 p-4">
+      {/* Mobile Menu Button */}
+      <button
+        className="md:hidden text-black text-2xl focus:outline-none"
+        onClick={() => setIsOpen(!isOpen)}
+      >
+        {isOpen ? <FiX /> : <FiMenu />}
+      </button>
+
+      {/* Mobile Navigation (Slide-in) */}
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ x: "100%" }}
+            animate={{ x: 0 }}
+            exit={{ x: "100%" }}
+            transition={{ duration: 0.3, ease: "easeInOut" }}
+            className="fixed top-0 right-0 h-full w-4/5 bg-white shadow-lg flex flex-col items-center justify-center space-y-8 text-lg z-50"
+          >
+            {/* Close Button */}
+            <button
+              className="absolute top-4 right-4 text-black text-2xl focus:outline-none"
+              onClick={() => setIsOpen(false)}
+            >
+              <FiX />
+            </button>
+
+            <Link
+              to="/"
+              className="font-bold hover:text-purple-500 transition"
+              onClick={() => setIsOpen(false)}
+            >
+              Home
+            </Link>
             <Link
               to="/projects"
-              className="hover:text-blue-600 transition"
+              className="hover:text-purple-500 transition"
               onClick={() => setIsOpen(false)}
             >
               Projects
             </Link>
             <Link
-              to="/report"
-              className="hover:text-blue-600 transition"
+              to="/complaint"
+              className="hover:text-purple-500 transition"
               onClick={() => setIsOpen(false)}
             >
-              Report
+              Complaint
             </Link>
-            <Link
-              to="/revenue"
-              className="hover:text-blue-600 transition"
-              onClick={() => setIsOpen(false)}
-            >
-              Revenue
-            </Link>
-          </div>
-        </div>
-      )}
+
+            <FiSearch className="text-black text-xl cursor-pointer hover:text-purple-500 transition" />
+            <button className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-5 py-2 rounded-lg shadow-md hover:scale-105 transition-transform">
+              Download
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </nav>
   );
 };
